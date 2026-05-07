@@ -1,3 +1,4 @@
+// filepath: src/App.js
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -21,9 +22,9 @@ function AppContent() {
   const renderView = () => {
     switch (activeView) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard setActiveView={setActiveView} />;
       case 'upload':
-        return <Upload />;
+        return <Upload setActiveView={setActiveView} />;
       case 'history':
         return <History />;
       case 'settings':
@@ -31,7 +32,7 @@ function AppContent() {
       case 'help':
         return <Help />;
       default:
-        return <Dashboard />;
+        return <Dashboard setActiveView={setActiveView} />;
     }
   };
 

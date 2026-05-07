@@ -1,9 +1,10 @@
+// filepath: src/components/Dashboard.js
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import './Dashboard.css';
 
-const Dashboard = () => {
+const Dashboard = ({ setActiveView }) => {
   const { user, isGuest } = useAuth();
   const { t } = useLanguage();
 
@@ -15,30 +16,9 @@ const Dashboard = () => {
   ];
 
   const recentClasses = [
-    {
-      id: 1,
-      title: 'Introducción a React',
-      date: '2024-12-01',
-      duration: '45 min',
-      status: 'completed',
-      color: '#667eea'
-    },
-    {
-      id: 2,
-      title: 'JavaScript Avanzado',
-      date: '2024-11-28',
-      duration: '60 min',
-      status: 'completed',
-      color: '#f093fb'
-    },
-    {
-      id: 3,
-      title: 'CSS Grid y Flexbox',
-      date: '2024-11-25',
-      duration: '38 min',
-      status: 'completed',
-      color: '#4facfe'
-    }
+    { id: 1, title: 'Introducción a React', date: '2024-12-01', duration: '45 min', status: 'completed', color: '#667eea' },
+    { id: 2, title: 'JavaScript Avanzado', date: '2024-11-28', duration: '60 min', status: 'completed', color: '#f093fb' },
+    { id: 3, title: 'CSS Grid y Flexbox', date: '2024-11-25', duration: '38 min', status: 'completed', color: '#4facfe' }
   ];
 
   const quickActions = [
@@ -46,6 +26,18 @@ const Dashboard = () => {
     { icon: '📚', label: 'Ver Historial', action: 'history', color: '#f093fb' },
     { icon: '⚙️', label: 'Configuración', action: 'settings', color: '#4facfe' }
   ];
+
+  const handleQuickAction = (action) => {
+    if (!setActiveView) return;
+    setActiveView(action);
+  };
+
+  const handleViewSummary = (clsId) => {
+    try {
+      localStorage.setItem('classsummary_focus_id', String(clsId));
+    } catch (e) {}
+    if (setActiveView) setActiveView('history');
+  };
 
   return (
     <div className="dashboard fade-in">
@@ -61,12 +53,7 @@ const Dashboard = () => {
           </p>
         </div>
         <div className="header-date">
-          📅 {new Date().toLocaleDateString('es-ES', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })}
+          📅 {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </div>
       </div>
 
@@ -74,19 +61,14 @@ const Dashboard = () => {
         <div className="guest-banner">
           <span className="banner-icon">ℹ️</span>
           <div className="banner-content">
-            <strong>Modo Invitado:</strong> Tus datos se guardan temporalmente. 
-            Crea una cuenta para acceder a todas las funciones.
+            <strong>Modo Invitado:</strong> Tus datos se guardan temporalmente. Crea una cuenta para acceder a todas las funciones.
           </div>
         </div>
       )}
 
       <div className="stats-grid">
         {stats.map((stat, index) => (
-          <div 
-            key={index} 
-            className="stat-card"
-            style={{ '--stat-color': stat.color }}
-          >
+          <div key={index} className="stat-card" style={{ '--stat-color': stat.color }}>
             <div className="stat-icon">{stat.icon}</div>
             <div className="stat-info">
               <div className="stat-value">{stat.value}</div>
@@ -99,18 +81,12 @@ const Dashboard = () => {
       <div className="dashboard-grid">
         <div className="recent-section">
           <div className="section-header">
-            <h2 className="section-title">
-              <span className="title-icon">📚</span>
-              {t('recentClasses')}
-            </h2>
+            <h2 className="section-title"><span className="title-icon">📚</span>{t('recentClasses')}</h2>
           </div>
           <div className="recent-list">
             {recentClasses.map((cls) => (
               <div key={cls.id} className="recent-item">
-                <div 
-                  className="item-indicator"
-                  style={{ background: cls.color }}
-                ></div>
+                <div className="item-indicator" style={{ background: cls.color }}></div>
                 <div className="item-content">
                   <div className="item-title">{cls.title}</div>
                   <div className="item-meta">
@@ -119,7 +95,7 @@ const Dashboard = () => {
                     <span className="meta-badge success">✓ Completado</span>
                   </div>
                 </div>
-                <button className="item-action">Ver Resumen →</button>
+                <button className="item-action" onClick={() => handleViewSummary(cls.id)}>Ver Resumen →</button>
               </div>
             ))}
           </div>
@@ -127,18 +103,11 @@ const Dashboard = () => {
 
         <div className="actions-section">
           <div className="section-header">
-            <h2 className="section-title">
-              <span className="title-icon">⚡</span>
-              {t('quickActions')}
-            </h2>
+            <h2 className="section-title"><span className="title-icon">⚡</span>{t('quickActions')}</h2>
           </div>
           <div className="actions-list">
             {quickActions.map((action, index) => (
-              <button 
-                key={index} 
-                className="action-button"
-                style={{ '--action-color': action.color }}
-              >
+              <button key={index} className="action-button" style={{ '--action-color': action.color }} onClick={() => handleQuickAction(action.action)}>
                 <span className="action-icon">{action.icon}</span>
                 <span className="action-label">{action.label}</span>
               </button>
@@ -150,10 +119,7 @@ const Dashboard = () => {
               <span className="tips-icon">💡</span>
               <span className="tips-title">Consejo del día</span>
             </div>
-            <p className="tips-text">
-              Puedes cambiar el idioma de los resúmenes en la sección de Configuración. 
-              ¡Soportamos más de 30 idiomas!
-            </p>
+            <p className="tips-text">Puedes cambiar el idioma de los resúmenes en la sección de Configuración. ¡Soportamos más de 30 idiomas!</p>
           </div>
         </div>
       </div>
